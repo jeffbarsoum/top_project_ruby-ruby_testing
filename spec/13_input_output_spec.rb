@@ -47,11 +47,14 @@ describe NumberGame do
 
       # Write a similar test to the one above, that uses a custom matcher
       # instead of <, >, =.
-      matcher :be_between_zero_and_nine do
+      matcher :be_between_zero_and_nine do |_expected|
+        match { |actual| actual >= 0 && actual <= 9 }
       end
 
       # remove the 'x' before running this test
-      xit 'is a number between 0 and 9' do
+      it 'is a number between 0 and 9' do
+        solution = game.solution
+        expect(solution).to be_between_zero_and_nine
       end
     end
   end
@@ -79,7 +82,10 @@ describe NumberGame do
     # does not equal @solution.
     context 'when user guess is not correct' do
       # remove the 'x' before running this test
-      xit 'is not game over' do
+      subject(:game_continue) { described_class.new(5, '7') }
+
+      it 'is not game over' do
+        expect(game_continue).not_to be_game_over
       end
     end
   end
@@ -93,7 +99,7 @@ describe NumberGame do
 
   describe '#verify_input' do
     subject(:game_check) { described_class.new }
-    # Note: #verify_input will only return a value if it matches /^[0-9]$/
+    # NOTE: #verify_input will only return a value if it matches /^[0-9]$/
 
     context 'when given a valid input as argument' do
       it 'returns valid input' do
@@ -107,7 +113,10 @@ describe NumberGame do
 
     # Write a test for the following context.
     context 'when given invalid input as argument' do
-      xit 'returns nil' do
+      it 'returns nil' do
+        user_input = '('
+        verified_input = game_check.verify_input(user_input)
+        expect(verified_input).to be_nil
       end
     end
   end
@@ -168,9 +177,12 @@ describe NumberGame do
     # Write a test for the following context.
     context 'when user inputs two incorrect values, then a valid input' do
       before do
+        allow(game_loop).to receive(:player_input).and_return('{', '^', '9')
       end
 
-      xit 'completes loop and displays error message twice' do
+      it 'completes loop and displays error message twice' do
+        expect(game_loop).to receive(:puts).with('Input error!').twice
+        game_loop.player_turn
       end
     end
   end
@@ -202,7 +214,9 @@ describe NumberGame do
     # @guess, and @count
     context 'when count is 2-3' do
       # remove the 'x' before running this test
-      xit 'outputs correct phrase' do
+      subject(:game) { described_class.new(5, '5', 3) }
+
+      it 'outputs correct phrase' do
         congrats_phrase = "Congratulations! You picked the random number in 3 guesses!\n"
         expect { game.final_message }.to output(congrats_phrase).to_stdout
       end
@@ -213,7 +227,10 @@ describe NumberGame do
     # Write a test for the following context.
     context 'when count is 4 and over' do
       # remove the 'x' before running this test
-      xit 'outputs correct phrase' do
+      subject(:game) { described_class.new(5, '5', 4) }
+      it 'outputs correct phrase' do
+        congrats_phrase = "That was hard. It took you 4 guesses!\n"
+        expect { game.final_message }.to output(congrats_phrase).to_stdout
       end
     end
   end
