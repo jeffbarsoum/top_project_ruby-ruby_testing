@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-# rubocop: disable Layout/LineLength
-
 # require_relative '../lib/15c_random_number'
 # require_relative '../lib/15b_binary_search'
 
@@ -27,7 +25,7 @@ class BinaryGame
   def player_input(min, max)
     loop do
       user_input = gets.chomp
-      verified_number = verify_input(min, max, user_input.to_i) if user_input.match?(/^\d+$/)
+      verified_number = verify_input(min, max, user_input)
       return verified_number if verified_number
 
       puts "Input error! Please enter a number between #{min} or #{max}."
@@ -35,7 +33,9 @@ class BinaryGame
   end
 
   def verify_input(min, max, input)
-    return input if input.between?(min, max)
+    return nil unless input.match?(/^\d+$/)
+
+    input.to_i if input.to_i.between?(min, max)
   end
 
   def update_random_number
@@ -99,4 +99,3 @@ class BinaryGame
     end
   end
 end
-# rubocop: enable Layout/LineLength
